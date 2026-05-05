@@ -1,0 +1,60 @@
+import java.util.*;
+
+public class StringMatch {
+
+    public void match(String a, String b) {
+
+        int n = a.length();
+        int m = b.length();
+        int align = 0;
+        int comp = 0;
+
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println("-------------------------");
+
+        for (int i = 0; i <= n - m; i++) {
+
+            align++;
+
+
+            System.out.println(" ".repeat(i) + b);
+            int j = 0;
+            while (j < m) {
+                comp++;
+                if (b.charAt(j) == a.charAt(i + j)) {
+                    j++;
+                } else {
+                    break;
+                }
+            }
+
+            if (j == m) {
+                System.out.println("\nFOUND at index " + i);
+                System.out.println("Total alignments  : " + align);
+                System.out.println("Total comparisons : " + comp);
+                return;
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("NOT FOUND");
+        System.out.println("Alignments : " + align);
+        System.out.println("Comparisons: " + comp);
+    }
+
+    public static void main(String[] args) {
+
+        StringMatch s = new StringMatch();
+        Scanner in = new Scanner(System.in);
+
+        System.out.println("Enter string:");
+        String a = in.nextLine();
+
+        System.out.println("Enter pattern:");
+        String b = in.nextLine();
+
+        s.match(a, b);
+    }
+}
