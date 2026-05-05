@@ -1,0 +1,90 @@
+import java.util.*;
+class Item implements Comparable<Item> {
+    int id;
+    double weight;
+    double value;
+    double ratio;
+    public Item(int id, double weight, double value) {
+        this.id = id;
+        this.weight = weight;
+        this.value = value;
+        this.ratio = value / weight;
+    }
+    public int compareTo(Item other) {
+        return Double.compare(other.ratio, this.ratio);
+    }
+}
+class Node {
+    int level;
+    double value;
+    double weight;
+    double ub;
+    List<Integer> selectedItems = new ArrayList<>();
+}
+public class KnapsackBB {
+    static double calculateBound(Node u, int n, double W, Item[] items) {
+        if (u.weight >= W) return 0;
+        double profitBound = u.value;
+        int j = u.level + 1;
+        if (j < n) {
+            profitBound += (W - u.weight) * items[j].ratio;
+        }
+        return profitBound;
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter total number of items: ");
+        int n = sc.nextInt();
+        System.out.print("Enter maximum knapsack capacity: ");
+        double W = sc.nextDouble();
+        Item[] items = new Item[n];
+        for (int i = 0; i < n; i++) {
+            System.out.println("Item " + (i + 1) + ":");
+            System.out.print("  Enter item number: ");
+            int id = sc.nextInt();
+            System.out.print("  Enter value: ");
+            double val = sc.nextDouble();
+            System.out.print("  Enter weight: ");
+            double wt = sc.nextDouble();
+            items[i] = new Item(id, wt, val);
+        }
+        Arrays.sort(items);
+        Queue<Node> Q = new LinkedList<>();
+        Node root = new Node();
+        root.level = -1;
+        root.value = 0;
+        root.weight = 0;
+        root.ub = calculateBound(root, n, W, items);
+        Q.add(root);
+        double maxProfit = 0;
+        List<Integer> bestPath = new ArrayList<>();
+        while (!Q.isEmpty()) {
+            Node v = Q.poll();
+            if (v.level == n - 1) continue;
+            int nextLevel = v.level + 1;
+            Node include = new Node();
+            include.level = nextLevel;
+            include.weight = v.weight + items[nextLevel].weight;
+            include.value = v.value + items[nextLevel].value;
+            include.selectedItems = new ArrayList<>(v.selectedItems);
+            include.selectedItems.add(items[nextLevel].id);
+            if (include.weight <= W && include.value > maxProfit) {
+                maxProfit = include.value;
+                bestPath = include.selectedItems;
+            }
+            include.ub = calculateBound(include, n, W, items);
+            if (include.ub > maxProfit) Q.add(include);
+            Node exclude = new Node();
+            exclude.level = nextLevel;
+            exclude.weight = v.weight;
+            exclude.value = v.value;
+            exclude.selectedItems = new ArrayList<>(v.selectedItems);
+            exclude.ub = calculateBound(exclude, n, W, items);
+            if (exclude.ub > maxProfit) Q.add(exclude);
+        }
+        System.out.println("\n--- FINAL RESULT ---");
+        System.out.println("Maximum Profit: " + maxProfit);
+        System.out.println("Items included (by Number): " + bestPath);
+        sc.close();
+    }
+}
