@@ -1,0 +1,56 @@
+import java.util.Scanner;
+class MinHeap {
+    int[] heap;
+    int size;
+    public MinHeap(int capacity) {
+        heap = new int[capacity + 1]; 
+        size = 0;
+    }
+    public void insert(int val) {
+        size++;
+        int i = size;
+        while (i > 1 && val < heap[i / 2]) {
+            heap[i] = heap[i / 2]; 
+            i = i / 2;             
+        }
+        heap[i] = val; // Place the value in its final spot
+    }
+    public int deleteMin() {
+        if (size == 0) return -1;
+        int root = heap[1];      
+        int last = heap[size--]; 
+        if (size > 0) {
+            int i = 1;
+            while (i * 2 <= size) {
+                int child = i * 2; 
+                if (child + 1 <= size && heap[child + 1] < heap[child]) {
+                    child++;
+                }
+                if (last <= heap[child]) break;
+
+                heap[i] = heap[child]; 
+                i = child;             
+            }
+            heap[i] = last; 
+        }
+        return root;
+    }
+    public void display() {
+        System.out.print("Heap levels: ");
+        for (int i = 1; i <= size; i++) System.out.print(heap[i] + " ");
+        System.out.println();
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        MinHeap h = new MinHeap(10); // Capacity of 10
+        h.insert(15);
+        h.insert(5);
+        h.insert(10);
+        System.out.println("After inserting 15, 5, 10:");
+        h.display(); 
+        System.out.println("Deleted Min: " + h.deleteMin());
+        h.display(); 
+    }
+}
